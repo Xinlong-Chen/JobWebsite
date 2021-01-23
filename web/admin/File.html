@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件管理</title>
+    <style type="text/css">
+        .formcontainer {
+            background-color: #DAE8E8;
+            padding: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <script src="../resources/js/jquery.js"></script>
+    <script src="../resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="../resources/marked-master/marked.min.js"></script>
+
+    <script>
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/Login_Control.php',
+            data:"&action="+"qryAdmin",
+            success: function (data) {
+                console.log(data);
+                if (data==-1){
+                    // alert("请登录后访问！");
+                    window.location="../403.html";
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+        function changeFrameHeight(that){
+            $(that).height(document.documentElement.clientHeight-10);
+        }
+    </script>
+
+    <style type="text/css">
+        #parent {
+            width: 200px;
+            height: 20px;
+            border: 2px solid gray;
+            background: lightgray;
+            display: none;
+        }
+        #son {
+            width: 0;
+            height: 100%;
+            background: lightgreen;
+            text-align: center;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" align="center">
+                        文件管理
+                    </h1>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" name="tzform" id="tzform">
+                        <input id="id" name="id" type="hidden">
+                        <div class="form-group">
+                            <label for="title" class="col-sm-2 control-label">下载标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="title" id="title" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="file" class="col-sm-2 control-label">文件</label>
+                            <div class="col-sm-10">
+                                <input type="file" name="file" id="file" />
+                            </div>
+                        </div>
+                        <div align="center">
+                            <div id="parent">
+                                <div id="son"></div>
+                            </div>
+                            <p id="con"></p>
+                        </div>
+
+                        <div class="form-group" align="center">
+                            <input type="button" id="add" class="btn btn-primary btn-sm" value="提交">
+                            <input type="hidden" id="con2">
+                            <input type="button" id="rst" class="btn btn-warning btn-sm" value="复位">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead">文件列表</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>文件标题</th>
+                            <th>文件名</th>
+                            <th width="30%">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel-footer" align="center">
+                Copyright (C)2019 哈尔滨理工大学计算机学院 版权所有
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function down(path){
+        path="../../upload/"+path;
+
+
+    }
+
+    function sub() {
+        var obj = new XMLHttpRequest();
+        obj.onreadystatechange = function() {
+            if (obj.status == 200 && obj.readyState == 4) {
+                // alert(obj.responseText);
+                if(obj.responseText=="1"){
+                    document.getElementById('con').innerHTML = document.getElementById('file').files[0].name+"上传成功！";
+                }
+                else {
+                    document.getElementById('con').innerHTML = obj.responseText;
+                }
+                // document.getElementById('con').innerHTML = obj.responseText;
+            }
+        };
+        obj.upload.onprogress = function(evt) {
+            var num = (evt.loaded / evt.total) * 100;
+            var per = Math.floor(num) + "%";
+            document.getElementById('parent').style.display = 'block';
+            document.getElementById('son').style.width = per;
+            document.getElementById('son').innerHTML = per;
+        };
+        var fm = document.getElementById('file').files[0];
+        var title = document.getElementById('title').value;
+        let id = document.getElementById('id').value;
+        var fd = new FormData();
+        fd.append('userfile', fm);
+        fd.append('title',title);
+        fd.append('action',"add");
+        fd.append('id',id);
+        obj.open("post", "../../com/admin/upload.php");
+        obj.send(fd);
+        // alert(obj.onreadystatechange);
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '../../com/admin/upload.php',
+        data:"&action="+"qry",
+        success: function (data) {
+            console.log(data);
+            var a = data.split('&_cxllovezjh');
+            console.log(a);
+            string="";
+            var id=0;
+            for (var i = 0; i < a.length-1; i++) {
+                filepath = "../../upload/"+JSON.parse(a[i]).filename;
+                // alert(JSON.parse(a[i]).title);
+                string+="<tr><td>"+(++id)+"</td>" +
+                    "<td>"+JSON.parse(a[i]).title +"</td>" +
+                    "<td>"+JSON.parse(a[i]).filename+"</td>"+
+                    "<td>" +
+                    "<input type='button' class='btn btn-success custom-width' onclick='edit("+JSON.parse(a[i]).id+")' value='编辑'/>"+
+                    "<input type='button' class='btn btn-danger custom-width' onclick='del("+JSON.parse(a[i]).id+")' value='删除'/>"+
+                    "<button class='btn btn-primary custom-width' type='button' ><a href='"+filepath+"' style='color: white'>下载</a></button>"+
+                    "</td>" +
+                    "</tr>";
+            }
+            $("#message").append(string);
+        },
+        error:function(){
+            console.log("ERROR")
+        }
+    });
+
+    function edit(id) {
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/upload.php',
+            data:"&action="+"edi"+"&id="+id,
+            statusCode:{
+                200:function (data) {
+                    console.log(data);
+                    var a = data.split('&_cxllovezjh');
+                    console.log(a);
+                    // alert(data);
+                    $("#id").val(JSON.parse(a[0]).id);
+                    $("#title").val(JSON.parse(a[0]).title);
+                },
+                404:function () {
+                    window.location="error.html";
+                }
+            }
+        })
+    }
+
+    function del(id) {
+        $.ajax({
+            type:"post",
+            data:"action=del&id="+id,
+            url:"../../com/admin/upload.php",
+            statusCode:{
+                200:function (data) {
+                    // alert(data);
+                    window.location = "File.html";
+                },
+                404:function () {
+                    window.location="../error.html";
+                }
+            }
+        })
+    }
+
+    $("#rst").click(function() {
+        // alert();
+    });
+    $("#add").click(function(){
+        sub();
+        $("#id").html("");
+    });
+</script>
+
+</body>
+</html>

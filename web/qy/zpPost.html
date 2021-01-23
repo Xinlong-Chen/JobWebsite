@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>招聘信息管理</title>
+    <style type="text/css">
+        .formcontainer {
+            background-color: #DAE8E8;
+            padding: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <script src="../resources/js/jquery.js"></script>
+    <script src="../resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="../resources/marked-master/marked.min.js"></script>
+
+    <script>
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/Login_Control.php',
+            data:"&action="+"qryQY",
+            success: function (data) {
+                console.log(data);
+                if (data==-1){
+                    // alert("请登录后访问！");
+                    window.location="../403.html";
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+        function changeFrameHeight(that){
+            $(that).height(document.documentElement.clientHeight-10);
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" align="center">
+                        招聘信息管理
+                    </h1>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" name="zpform" id="zpform">
+                        <input id="id" name="id" type="hidden">
+                        <div class="form-group">
+                            <label for="InputTitle" class="col-sm-2 control-label">标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="InputTitle" id="InputTitle" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否希望置顶</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="InputTop" name="InputTop">
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="markdown_textarea" class="col-sm-2 control-label">招聘简章</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" rows="5" name="markdown_textarea" id="markdown_textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">预览</label>
+                            <div class="col-sm-10">
+                                <div id="preview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" align="center">
+                            <input type="button" id="add" class="btn btn-primary btn-sm" value="提交">
+                            &nbsp;&nbsp;
+                            <input type="button" id="rst" class="btn btn-warning btn-sm" value="复位">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel-footer" align="center">
+                    Copyright (C)2019 哈尔滨理工大学计算机学院 版权所有
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // alert("2");
+    $("#markdown_textarea").bind('input porpertychange',function(){
+        // alert("1");
+        var before = $("#markdown_textarea").val();
+        document.getElementById("preview").innerHTML = marked(before);
+    });
+
+    $("#rst").click(function(){
+        $("#InputTop").val("0");
+        $("#id").val("");
+        $("#InputTitle").val("");
+        $("#markdown_textarea").val("");
+        $("#preview").empty();
+    });
+
+    $("#add").click(function(){
+        // alert($("#markdown_textarea").val());
+        var data = $("#zpform").serialize();
+        // alert(data);
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/zp.php',
+            data: data+"&action="+"qyadd"+"&id="+$("#id").val(),
+            success: function (data) {
+                console.log(data);
+                alert(data);
+                alert("招聘信息提交成功！正在等待管理员审核！");
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

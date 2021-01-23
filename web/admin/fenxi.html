@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>分析投票结果</title>
+    <!-- 引入 echarts.js -->
+    <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css">
+    <link href="resources/css/app.css" rel="stylesheet"/>
+    <script src="resources/js/jquery.js"></script>
+    <script src="resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="resources/marked-master/marked.min.js"></script>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script>
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
+        //对getQueryVariable("id")的问卷进行分析
+    </script>
+
+    <script>
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data:"&action="+"qrywt&id="+getQueryVariable("id"),
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+
+                for (let i=0;i<a.length-1;i++){
+                    str="<div id=\"chart"+i+"\" style=\"width: 400px;height:320px;margin: auto\">\n" +
+                        "\n" +
+                        "</div>";
+                    $("#contain").append(str);
+                    getdata(JSON.parse(a[i]).wtid,'chart'+i);
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    </script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="contain">
+
+</div>
+
+<script type="text/javascript">
+
+
+    function getdata(wtid,local) {
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data:"&action=qryshujuBywtid&wtid="+wtid,
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var data_str=[];
+                var names=[];//定义两个数组
+                var title="";
+                for(var i=0;i<a.length-1;i++) {
+                    title = JSON.parse(a[i]).problem;
+                    names.push(JSON.parse(a[i]).ans);
+                    var tmp = new Object();
+                    tmp.value = JSON.parse(a[i]).num;
+                    tmp.name = JSON.parse(a[i]).ans;
+                    data_str.push(tmp);
+                }
+                // let json_str = JSON.stringify(data_str);
+                // console.log(json_str);
+                // var myChart = echarts.init(document.getElementById('main'));
+                //饼图模板
+                var dom = document.getElementById(local);
+                var myChart = echarts.init(dom);
+                var app = {};
+                option = null;
+                option = {
+                    title : {
+                        text: title,
+                        subtext: '',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient : 'vertical',
+                        x : 'left',
+                        data:[]
+                    },
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {
+                                show: true,
+                                type: ['pie', 'funnel'],
+                                option: {
+                                    funnel: {
+                                        x: '25%',
+                                        width: '50%',
+                                        funnelAlign: 'left',
+                                        max: 1548
+                                    }
+                                }
+                            },
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data:[]
+                        }
+                    ]
+                };
+                ;
+                if (option && typeof option === "object") {
+                    myChart.setOption(option, true);
+                }
+                myChart.setOption({ //加载数据图表
+                    legend: {
+                        data: names
+                    },
+                    series: {
+                        // 根据名字对应到相应的系列
+                        name: ['数量'],
+                        data: data_str
+                    }
+                });
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+</script>
+</body>
+</html>

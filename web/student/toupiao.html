@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投票</title>
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <script src="../resources/js/jquery.js"></script>
+    <script src="../resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="../resources/marked-master/marked.min.js"></script>
+
+    <script>
+        // $.ajax({
+        //     type: 'POST',
+        //     url: '../../com/index/Login_Control.php',
+        //     data:"&action="+"qryStudent",
+        //     success: function (data) {
+        //         console.log(data);
+        //         if (data==-1){
+        //             // alert("请登录后访问！");
+        //             window.location="../403.html";
+        //         }
+        //     },
+        //     error:function(){
+        //         console.log("ERROR")
+        //     }
+        // });
+
+        // id=getQueryVariable('id');
+        id=12;
+
+        // $.ajax({
+        //     type: 'POST',
+        //     url: '../../com/admin/wjdc.php',
+        //     data:"&action="+"qryStudentHave&wjid="+id,
+        //     success: function (data) {
+        //         console.log(data);
+        //         if (data==1){
+        //             alert("你已填写过该问卷！");
+        //             window.location="tpindex.html";
+        //         }
+        //     },
+        //     error:function(){
+        //         console.log("ERROR")
+        //     }
+        // });
+
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
+        //查询问卷
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data:"&action=qrywj&id="+id,
+            success: function (data) {
+                console.log(data);
+
+                $("#title").append(data);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+        let wtid = Array();
+        //查询问题
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data:"&action="+"qrywt&id="+id,
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var id=0;
+                for (var i = 0; i < a.length-1; i++) {
+                    wtid.push(JSON.parse(a[i]).wtid);
+                    str="                        <div style=\"font-size: 15px\" id=\"question"+i+"\" class=\"col-lg-offset-1\">\n" +
+                        "                            <div id=\"qus"+i+"\">\n" +
+                        "                                    <label class=\"control-label\" id=\"q"+i+"\">问题"+(i+1)+":        "+JSON.parse(a[i]).problem+"</label>\n" +
+                        "                            </div>\n" +
+                        "                            <div id=\"ans"+i+"\">\n" +
+                        "                            </div>\n" +
+                        "                        </div>" +
+                        "                        <hr>" +
+                        "                        <br>";
+                    // alert(JSON.parse(a[i]).title);
+                    // string+="<tr><td>"+(++id)+"</td><td>"+JSON.parse(a[i]).title +
+                    //     "</td><td>"+
+                    //     "<input type='button' class='btn btn-success custom-width' onclick='edit("+JSON.parse(a[i]).id+")' value='编辑'/>"+
+                    //     "<input type='button' class='btn btn-danger custom-width' onclick='del("+JSON.parse(a[i]).id+")' value='删除'/>"+
+                    //     "</td></tr>";
+                    // alert(str);
+                    $("#question").append(str);
+                }
+                getallans();
+                // alert(wtid);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+
+
+
+        //查询答案
+        function getallans() {
+            for (var i=0;i<wtid.length;i++){
+                getans(wtid[i],i);
+            }
+        }
+
+        //对应问题的答案
+        function getans(wtid,pos) {
+            $.ajax({
+                type: 'POST',
+                url: '../../com/admin/wjdc.php',
+                data: "&action=" + "qryans&id=" + wtid,
+                success: function (data) {
+                    console.log(data);
+                    var a = data.split('&_cxllovezjh');
+                    console.log(a);
+                    var id = 0;
+                    str="";
+                    for (var i = 0; i < a.length - 1; i++) {
+                        str+="<input type=\"radio\"  class=\"radio-inline\" name=\"wttitle"+wtid+"\"  value=\""+JSON.parse(a[i]).ans+"\" >"+JSON.parse(a[i]).ans+"\n";
+                    }
+                    $("#ans"+pos).append(str);
+                }
+            });
+
+        }
+
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" align="center">
+                        投票
+                    </h1>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" name="wjform" id="wjform">
+                        <input id="id" name="id" type="hidden">
+                        <div class="col-lg-offset-1">
+                            <label class="control-label" style="font-size: 17px" id="title"></label>
+                        </div>
+
+                        <hr>
+                        <div id="question" class="col-lg-offset-1">
+<!--                            <div id="qus1">-->
+<!--                                    <label class="control-label" id="q1">问题1:wesasfdcsezdfcwesdzfx</label>-->
+<!--                            </div>-->
+<!--                            <div id="ans1">-->
+<!--                                <input type="radio"  class="radio-inline" name="wttitle1" id="wttitle1" value="是" >是-->
+<!--                                <input type="radio"  class="radio-inline" name="wttitle1" id="wttitle2" value="否">否-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+                        </div>
+
+                        <hr>
+                        <div class="form-group" align="center">
+                            <input type="button" id="add" class="btn btn-primary btn-sm" value="提交">
+                            &nbsp;&nbsp;
+                            <input type="button" id="rst" class="btn btn-warning btn-sm" value="复位">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" align="center">
+                Copyright (C)2019 哈尔滨理工大学计算机学院 版权所有
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function tx(id) {
+        //insert data
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data:"&action="+"tx&wjid="+id,
+            success: function (data) {
+                console.log(data);
+                if(data=="Success"){
+                    alert("感谢的你填写！");
+                }
+                else {
+                    alert("系统错误！");
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+
+    $("#rst").click(function(){
+        $("#id").val("");
+    });
+
+    $("#add").click(function(){
+        tx(id);
+        // alert($("#markdown_textarea").val());
+        var data = $("#wjform").serialize();
+        // alert(data);
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/wjdc.php',
+            data: data+"&action="+"ans"+"&id="+id,
+            success: function (data) {
+                console.log(data);
+                window.location="tpindex.html";
+                // alert(data);
+                // alert("插入成功！");
+                // window.location = "addWJ.html";
+            }
+        });
+    });
+
+    function fenxi(id) {
+        window.location="fenxi.html?id="+id;
+    }
+</script>
+</body>
+</html>

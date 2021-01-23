@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>哈尔滨理工大学就业网</title>
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <link href="index.css" rel="stylesheet">
+    <script src="../resources/js/jquery.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+
+    <script>
+
+        function login(){
+            window.location="../login/index.html";
+        }
+
+        function more(){
+            window.location="info.html";
+        }
+
+        function nav_zlxz() {
+            window.location="file.html";
+        }
+
+        function nav_xsljdz() {
+            window.location = "info.html";
+
+        }
+
+        function yrdwzc() {
+            window.location = "../qy/registerfirst.html";
+        }
+
+        function goadmin() {
+            window.location="../admin/index.html";
+        }
+
+        function exit() {
+            // alert("exit");
+            $.ajax({
+                type: 'POST',
+                url: '../../com/index/Login_Control.php',
+                data:"&action="+"exit",
+                success: function (data) {
+                    // alert(data);
+                    window.location="index.html";
+                },
+                error:function(){
+                    console.log("ERROR")
+                }
+            });
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/Login_Control.php',
+            data:"&action="+"qryLogin",
+            success: function (data) {
+                console.log(data);
+                if (data==-1){
+                    str="<div style=\"\" class=\"nav_login\" onclick=\"javascript:login()\">登录</div>";
+                    $("#head").append(str);
+                    // alert("请登录后访问！");
+                    // window.location="../403.html";
+                }
+                else {
+                    str="<div style=\"\" class=\"nav_login\" onclick=\"javascript:exit()\">登出</div>";
+                    $("#head").append(str);
+                }
+                if(data==1){
+                    str="<div style=\"\" class=\"nav_login\" onclick=\"javascript:goadmin()\">管理</div>";
+                    $("#head").append(str);
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data:"action=tzshow",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var trStr="";
+                for (var i = 0; i < a.length-1; i++) {
+                    //TODO:判断置顶与否，颜色不同
+                    if (JSON.parse(a[i]).top==1) {
+                        trStr += '<li>';
+                        trStr += "<a style='color:red;margin-left:-5px;width:225px;' href='lookpage.html?mold=tz&id="+JSON.parse(a[i]).id+"'>" + "【置顶】" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span style='color:red;'>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                    else{
+                        trStr += '<li>';
+                        trStr += "<a href='lookpage.html?mold=tz&id="+JSON.parse(a[i]).id+"'>" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                }
+                $("#tzlist").append(trStr);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data: "action=zpshow",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var trStr = '';
+
+                for (var i = 0; i < a.length-1; i++) {
+                    if (JSON.parse(a[i]).top==1) {
+                        trStr += '<li>';
+                        trStr += "<a style='color:red;margin-left:-5px;width:225px;' href='lookpage.html?mold=zp&id="+JSON.parse(a[i]).id+"'>【置顶】" + JSON.parse(a[i]).title;
+                        trStr += "</a>"
+                        trStr += " <span style='color:red;'>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                    else{
+                        trStr += '<li>';
+                        trStr += "<a href='lookpage.html?mold=zp&id="+JSON.parse(a[i]).id+"'>" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                }
+                $("#zplist").append(trStr);
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data:"action=dxzphshow",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var trStr = '';
+                for (var i = 0; i < a.length-1; i++) {
+                    //TODO:判断置顶与否，颜色不同
+                    if (JSON.parse(a[i]).top==1) {
+                        trStr += '<li>';
+                        trStr += "<a style='color:red;margin-left:-5px;width:225px;' href='lookpage.html?mold=dxzph&id="+JSON.parse(a[i]).id+"'>" + "【置顶】" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span style='color:red;'>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                    else{
+                        trStr += '<li>';
+                        trStr += "<a href='lookpage.html?mold=dxzph&id="+JSON.parse(a[i]).id+"'>" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                }
+                $("#dxzphlist").append(trStr);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    </script>
+</head>
+<body>
+<div class="header">
+    <div class="header_center" style="position:relative;" id="head">
+        <div class="nav_logo" onclick="javascript: logo_dj()"></div>
+        <ul class="nav_bar">
+            <li class="nav_bar_first" style="cursor: default">学生服务
+                <ul class="nav_bar_child">
+                    <li>
+                        <span class="glyphicon glyphicon-flag"></span>
+                        <a href="javascript: void(0);" onclick="nav_xsljdz()">求职招聘</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-save"></span>
+                        <a href="javascript: void(0);" onclick="nav_zlxz()">资料下载</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav_bar_secound" style="cursor: default">用人单位
+                <ul class="nav_bar_child">
+                    <li>
+                        <span class="glyphicon glyphicon-leaf"></span>
+                        <a href="javascript:void(0);" onclick="yrdwzc()">单位注册</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-user"></span>
+                        <a href="javascript:void(0);" onclick="nav_dwljdz()">信息维护</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-pushpin"></span>
+                        <a href="javascript:void(0);" onclick="nav_dwljdz()">招聘发布</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="banner" style="height: 547.5px;">
+    <img src="../resources/images/banner.jpg" width="100%">
+</div>
+
+<div id="section">
+    <div id="section_top" style="cursor: pointer; height: 575px;"></div>
+    <div id="section_bottom">
+        <div id="section_bottom_box">
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-4 column box">
+                        <div id="section_tzgg_title">
+                            <span>新闻通知</span>
+                            <a href="javascript:void(0);" onclick="more()">更多»</a>
+                        </div>
+                        <ul class="list" id="tzlist">
+                        </ul>
+                    </div>
+                    <div class="col-md-4 column box">
+                        <div id="section_zpxx_title">
+                            <span>招聘信息</span>
+                            <a href="javascript:void(0);" onclick="more()">更多»</a>
+                        </div>
+                        <ul class="list" id="zplist">
+                        </ul>
+                    </div>
+                    <div class="col-md-4 column box">
+                        <div id="section_dxzph_title">
+                            <span>大型招聘会</span>
+                            <a href="javascript:void(0);" onclick="more()">更多»</a>
+                        </div>
+                        <ul class="list" id="dxzphlist">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="carousel slide" id="carousel-612226" align="center">
+        <ol class="carousel-indicators">
+            <li data-slide-to="0" data-target="#carousel-612226">
+            </li>
+            <li data-slide-to="1" data-target="#carousel-612226">
+            </li>
+            <li data-slide-to="2" data-target="#carousel-612226" class="active">
+            </li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="item">
+                <img alt="" src="../resources/images/logo3.jpg" />
+            </div>
+            <div class="item">
+                <img alt="" src="../resources/images/logo2.jpg" />
+            </div>
+            <div class="item active">
+                <img alt="" src="../resources/images/logo1.jpg" />
+            </div>
+        </div> <a class="left carousel-control" href="#carousel-612226" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a> <a class="right carousel-control" href="#carousel-612226" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+</body>
+</html>

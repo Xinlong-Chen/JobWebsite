@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报名大型招聘会</title>
+    <style type="text/css">
+        .formcontainer {
+            background-color: #DAE8E8;
+            padding: 20px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <script src="../resources/js/jquery.js"></script>
+    <script src="../resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="../resources/marked-master/marked.min.js"></script>
+
+    <script>
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/Login_Control.php',
+            data:"&action="+"qryQY",
+            success: function (data) {
+                console.log(data);
+                if (data==-1){
+                    // alert("请登录后访问！");
+                    window.location="../403.html";
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+        function changeFrameHeight(that){
+            $(that).height(document.documentElement.clientHeight-10);
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead">可报名招聘会列表</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>招聘会主题</th>
+                            <th width="20%">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-heading"><span class="lead">已报名招聘会</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message2">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>招聘会主题</th>
+                            <th width="20%">状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer" align="center">
+                    Copyright (C)2019 哈尔滨理工大学计算机学院 版权所有
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $.ajax({
+        type: 'POST',
+        url: '../../com/admin/registerZPH.php',
+        data:"&action="+"qryCanReg",
+        success: function (data) {
+            console.log(data);
+            var a = data.split('&_cxllovezjh');
+            console.log(a);
+            string="";
+            var id=0;
+            for (var i = 0; i < a.length-1; i++) {
+                // alert(JSON.parse(a[i]).title);
+                string+="<tr><td>"+(++id)+"</td>" +
+                    "<td>"+JSON.parse(a[i]).title +"</td>" +
+                    "<td><input type='button' class='btn btn-success' onclick='resgister("+JSON.parse(a[i]).id+")' value='报名'/></td>" +
+                    "</tr>";
+            }
+            $("#message").append(string);
+        },
+        error:function(){
+            console.log("ERROR")
+        }
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: '../../com/admin/registerZPH.php',
+        data:"&action="+"qryHaveReg",
+        success: function (data) {
+            console.log(data);
+            var a = data.split('&_cxllovezjh');
+            console.log(a);
+            string="";
+            var id=0;
+            sstatu="";
+            for (var i = 0; i < a.length-1; i++) {
+                if(JSON.parse(a[i]).status==0){
+                    sstatu="审核通过";
+                }
+                else if(JSON.parse(a[i]).status==1){
+                    sstatu="报名成功";
+                }
+                else if(JSON.parse(a[i]).status==2){
+                    sstatu="审核不通过";
+                }
+                // alert(JSON.parse(a[i]).title);
+                string+="<tr><td>"+(++id)+"</td>" +
+                    "<td>"+JSON.parse(a[i]).title +"</td>" +
+                    "<td>"+sstatu+"</td>" +
+                    "</tr>";
+            }
+            $("#message2").append(string);
+        },
+        error:function(){
+            console.log("ERROR")
+        }
+    });
+
+    function resgister(id){
+        //TODO:登记报名信息 -- 需要创建一个报名信息表 主键（企业id，招聘会id）还有一个管理员审核状态
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data:"&action="+"register&id="+id,
+            success: function (data) {
+                console.log(data);
+                if(data=="success"){
+                    alert("你已经成功报名该招聘会！");
+                    window.location="registerdxzph.html";
+                }
+                else{
+                    alert("错误！请稍后再试！");
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+</script>
+</body>
+</html>

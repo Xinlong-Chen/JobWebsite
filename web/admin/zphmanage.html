@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>大型招聘会审核</title>
+    <style type="text/css">
+        .formcontainer {
+            background-color: #DAE8E8;
+            padding: 20px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <script src="../resources/js/jquery.js"></script>
+    <script src="../resources/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+    <script src="../resources/marked-master/marked.min.js"></script>
+
+    <script>
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/Login_Control.php',
+            data:"&action="+"qryAdmin",
+            success: function (data) {
+                console.log(data);
+                if (data==-1){
+                    // alert("请登录后访问！");
+                    window.location="../403.html";
+                }
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/dxzph.php',
+            data:"&action="+"qry",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                string="";
+                var id=0;
+                for (var i = 0; i < a.length-1; i++) {
+                    // alert(JSON.parse(a[i]).title);
+                    if(i==0) {
+                        string += "<option value='" + JSON.parse(a[i]).id + "' selected>" + JSON.parse(a[i]).title + "</option>";
+                    }
+                    else{
+                        string += "<option value='" + JSON.parse(a[i]).id + "'>" + JSON.parse(a[i]).title + "</option>";
+                    }
+                }
+                $("#zphid").append(string);
+                // alert($("#zphid option:selected").val());
+                getlist();
+                getreadylist();
+                getqylist();
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" align="center">
+                        大型招聘会审核
+                    </h1>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" name="zphform" id="zphform">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">招聘会名称</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="zphid" name="zphid">
+
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead">待审核报名信息</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>公司</th>
+                            <th>招聘会主题</th>
+                            <th>状态</th>
+                            <th width="20%">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="contain">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead">已处理列表</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message2">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>公司</th>
+                            <th>招聘会主题</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody id="contain2">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead">已通过列表</span></div>
+                <div class="tablecontainer">
+                    <table class="table table-hover" id="message3">
+                        <thead>
+                        <tr>
+                            <th>ID.</th>
+                            <th>公司</th>
+                            <th>ID.</th>
+                            <th>公司</th>
+                        </tr>
+                        </thead>
+                        <tbody id="contain3">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel-footer" align="center">
+                Copyright (C)2019 哈尔滨理工大学计算机学院 版权所有
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#zphid").on('change',function(){
+        getlist();
+        getreadylist();
+        getqylist();
+    });
+    function getlist(){
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data: "&zphid="+$("#zphid option:selected").val()+"&action="+"qryAllByZphid",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                string="";
+                var id=0;
+                statu="";
+                $("#contain").empty();
+                for (var i = 0; i < a.length-1; i++) {
+                    if(JSON.parse(a[i]).status==0){
+                        statu="审核通过";
+                    }
+                    else if(JSON.parse(a[i]).status==1){
+                        statu="报名成功";
+                    }
+                    else if(JSON.parse(a[i]).status==2){
+                        statu="审核不通过";
+                    }
+                    string+="<tr id='"+JSON.parse(a[i]).did+"_"+JSON.parse(a[i]).uid+"'>" +
+                        "<td>"+(++id)+"</td>" +
+                        "<td>"+JSON.parse(a[i]).username + "</td>" +
+                        "<td>"+JSON.parse(a[i]).title + "</td>" +
+                        "<td>"+statu + "</td>" +
+                        "<td><input type='button' class='btn btn-success custom-width' onclick='passit("+JSON.parse(a[i]).did+","+JSON.parse(a[i]).uid+")' value='通过'/>"+
+                            "<input type='button' class='btn btn-danger custom-width' onclick='refuse("+JSON.parse(a[i]).did+","+JSON.parse(a[i]).uid+")' value='拒绝'/>"+
+                        "</td>" +
+                        "</tr>";
+                }
+                $("#message").append(string);
+            }
+        });
+    };
+
+    function getreadylist(){
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data: "&zphid="+$("#zphid option:selected").val()+"&action="+"qryAllReadyByZphid",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                string="";
+                var id=0;
+                statu="";
+                $("#contain2").empty();
+                for (var i = 0; i < a.length-1; i++) {
+                    if(JSON.parse(a[i]).status==0){
+                        statu="审核通过";
+                    }
+                    else if(JSON.parse(a[i]).status==1){
+                        statu="报名成功";
+                    }
+                    else if(JSON.parse(a[i]).status==2){
+                        statu="审核不通过";
+                    }
+                    string+="<tr>" +
+                        "<td>"+(++id)+"</td>" +
+                        "<td>"+JSON.parse(a[i]).username + "</td>" +
+                        "<td>"+JSON.parse(a[i]).title + "</td>" +
+                        "<td>"+statu + "</td>" +
+                        "</tr>";
+                }
+                $("#message2").append(string);
+            }
+        });
+    };
+
+    function getqylist(){
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data: "&zphid="+$("#zphid option:selected").val()+"&action="+"qylist",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                string="";
+                var id=0;
+                $("#contain3").empty();
+                for (var i = 0; i < a.length-1; i++) {
+                    // alert(i);
+                    if(i%2==0) {
+                        string += "<tr>" +
+                            "<td width='25%'>" + (++id) + "</td>" +
+                            "<td width='25%'>" + JSON.parse(a[i]).username + "</td>";
+                    }
+                    else{
+                        string += "<td width='25%'>" + (++id) + "</td>" +
+                            "<td width='25%'>" + JSON.parse(a[i]).username + "</td>"
+                            +"</tr>";
+                    }
+                    if(i%2==0&&i==a.length-2){
+                        string += "<td width='25%'></td>" +
+                            "<td width='25%'></td>"
+                            +"</tr>";
+                    }
+                }
+                $("#message3").append(string);
+            }
+        });
+    };
+
+    function passit(did,uid) {
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data:"&did="+did+"&uid="+uid+"&action="+"pass",
+            success: function (data) {
+                // alert(data);
+                console.log(data);
+                row = $("#"+did+"_"+uid).remove();
+                getreadylist();
+                getqylist();
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+
+    function refuse(did,uid) {
+        $.ajax({
+            type: 'POST',
+            url: '../../com/admin/registerZPH.php',
+            data:"&did="+did+"&uid="+uid+"&action="+"refuse",
+            success: function (data) {
+                // alert(data);
+                console.log(data);
+                row = $("#"+did+"_"+uid).remove();
+                getreadylist();
+                getqylist();
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <link href="index.css" rel="stylesheet">
+    <script src="../resources/js/jquery.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+
+    <script>
+        function login(){
+            window.location="../login/index.html";
+        }
+
+        function getpage(pagenum){
+            $.ajax({
+                type: 'POST',
+                url: '../../com/index/index.php',
+                data:"action=tzShowPage&pagenum="+pagenum,
+                success: function (data) {
+                    console.log(data);
+                    var a = data.split('&_cxllovezjh');
+                    console.log(a);
+                    var trStr="";
+                    $("#tzlist").empty();
+                    for (var i = 0; i < a.length-1; i++) {
+                        //TODO:判断置顶与否，颜色不同
+                        if (JSON.parse(a[i]).top==1) {
+                            trStr += '<li>';
+                            trStr += "<a style='color:red;margin-left:-5px;width:225px;' href='lookpage.html?mold=tz&id="+JSON.parse(a[i]).id+"'>" + "【置顶】" + JSON.parse(a[i]).title;
+                            trStr += "</a>";
+                            trStr += " <span style='color:red;'>" + JSON.parse(a[i]).postdate + "</span>";
+                            trStr += '</li>';
+                        }
+                        else{
+                            trStr += '<li>';
+                            trStr += "<a href='lookpage.html?mold=tz&id="+JSON.parse(a[i]).id+"'>" + JSON.parse(a[i]).title;
+                            trStr += "</a>";
+                            trStr += " <span>" + JSON.parse(a[i]).postdate + "</span>";
+                            trStr += '</li>';
+                        }
+                    }
+                    $("#tzlist").append(trStr);
+                },
+                error:function(){
+                    console.log("ERROR")
+                }
+            });
+        }
+        var numpage=1;
+        getpage(numpage);
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data:"action=tzGetCol",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                // alert(a);
+                console.log(a);
+
+                var pagenum = a[0];
+                var pagesize = 10;
+                var sumpage = Math.ceil(pagenum*1.0/pagesize);
+
+
+                // alert(sumpage);
+                str="";
+                str="<li><a onclick='getpage(1)'>First</a></li>";
+                $("#pagelist").append(str);
+                for(var i=1;i<=sumpage;i++){
+                    str="";
+                    str="<li><a onclick='getpage("+i+")'>"+i+"</a></li>";
+                    $("#pagelist").append(str);
+                }
+                str="";
+                str="<li><a onclick='getpage("+sumpage+")'>End</a></li>";
+                $("#pagelist").append(str);
+
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column box">
+            <div id="section_tzgg_title">
+                <span>新闻通知</span>
+            </div>
+            <ul class="list" id="tzlist">
+
+            </ul>
+        </div>
+        <div class="col-md-12 column">
+            <ul class="pagination" id="pagelist">
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>

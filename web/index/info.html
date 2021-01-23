@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>哈尔滨理工大学就业网</title>
+    <link rel="stylesheet" href="../resources/bootstrap/css/bootstrap.min.css">
+    <link href="../resources/css/app.css" rel="stylesheet"/>
+    <link href="info.css" rel="stylesheet">
+    <script src="../resources/js/jquery.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/jquery.htmlClean.js"></script>
+    <script type="text/javascript" src="http://cdn.ibootstrap.cn/www.layoutit.com/js/builder/v3/scripts.min.js"></script>
+
+    <script>
+
+
+    </script>
+
+    <style type="text/css">
+        #tzgg_title span:hover,#zpxx_title span:hover,#dxzph_title span:hover {
+            background-color: #fffe78;
+        }
+
+        #tzgg_title, #zpxx_title,#dxzph_title {
+            width: 100%;
+            height: 40px;
+            padding-left: 45px;
+        }
+
+        #tzgg_title span, #zpxx_title span, #dxzph_title span{
+            float: left;
+            line-height: 40px;
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+            color: #4b8bcc;
+            padding-bottom: 0.2em;
+            border-bottom: 1px solid #4b8bcc;
+        }
+
+        #tzgg_title {
+            background: url(../resources/images/notice2.png) no-repeat;
+        }
+
+        #zpxx_title {
+            background: url(../resources/images/chart2.png) no-repeat;
+        }
+
+        #dxzph_title {
+            background: url(../resources/images/bz2.png) no-repeat;
+        }
+
+        .nav_logo {
+            width: 257px;
+            height: 62px;
+            background: url(../resources/images/logo.png) no-repeat;
+            margin-top: 15px;
+            float: left;
+            cursor:pointer;
+            margin-right: 4em;
+        }
+
+        .leftbox{
+            width: 300px;
+            height: 340px;
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 7px;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-shadow: 3px 3px 4px #ddd;
+            /*border-right: 1px solid #4b8bcc;*/
+        }
+
+        #listcontainer{
+            width: auto;
+            height: auto;
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 7px;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-shadow: 3px 3px 4px #ddd;
+        }
+
+    </style>
+    <script>
+        function login(){
+          window.location="../Login/index.html";
+        }
+
+        function returnindex() {
+            window.location="index.html";
+        }
+
+        function logo_dj() {
+            window.location="../Login/index.html";
+        }
+
+    </script>
+</head>
+<body>
+<div class="header">
+    <div class="nav_logo" onclick="javascript: logo_dj()"></div>
+    <div class="header_center" style="position:relative;">
+        <div style="" class="nav_login" onclick="javascript:login()">登录</div>
+        <div style="" class="nav_login" onclick="javascript:returnindex()">主页</div>
+    </div>
+</div>
+<div id="section">
+    <div id="section_top" style="cursor: pointer; height: 70px;"></div>
+    <br>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column  ">
+                <div class="row clearfix">
+                    <div class="jumbotron" style="background-color:#f5f5f5;border: 1px solid #4b8bcc;box-shadow: 3px 3px 4px #ddd; border-radius: 7px;">
+                            <h2>
+                                <img src="../resources/images/timg.gif" alt="Welcome" height="90px">
+                                广告栏招租
+                            </h2>
+                        <p style="float: right">
+                            <a class="btn btn-primary btn-large" href="#">Learn more</a>
+                        </p>
+
+                    </div>
+                    <div class="col-md-4 column leftbox">
+                        <div id="tzgg_title">
+                            <span id="tz">新闻通知</span>
+                        </div>
+                        <br>
+                        <div id="zpxx_title">
+                            <span id="zp">招聘信息</span>
+                        </div>
+                        <br>
+                        <div id="dxzph_title">
+                            <span id="dxzph">大型招聘会</span>
+                        </div>
+                    </div>
+                    <div class="col-md-8 column">
+                        <div id="listcontainer">
+                            <ul class="list" id="tzlist">
+
+                            </ul>
+                            <ul class="list" id="zplist">
+
+                            </ul>
+                            <ul class="list" id="dxzphlist">
+
+                            </ul>
+                            <span>
+                            <ul class="pagination" id="pagelist">
+
+                            </ul>
+                        </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    mold="tz";
+
+    function login(){
+        window.location="../login/index.html";
+    }
+
+    var currentPage=1;
+    var pagesize = 10;
+    var SumPage;
+    window.onload= init;
+    function init() {
+        // alert(mold);
+        currentPage=1;
+        pagesize=10;
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data:"action="+mold+"GetCol",
+            success: function (data) {
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                // alert(a);
+                console.log(a);
+
+                var pagenum = a[0];
+                SumPage = Math.ceil(pagenum*1.0/pagesize);
+                // alert(SumPage);
+                getpage(currentPage);
+                // rebuiltPage(currentPage);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+
+    function rebuiltPage(nowpage) {
+        // alert(SumPage);
+        if(SumPage<=5){
+            // alert(currentPage+"Yes");
+            $("#pagelist").empty();
+            let str = "";
+
+            str = "<li><a onclick='getpage(1)'>First</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getprevpage()'>Prev</a></li>";
+            $("#pagelist").append(str);
+
+            for (let i = 1; i <= SumPage; i++) {
+                str = "<li><a onclick='getpage(" + i + ")'>" + i + "</a></li>";
+                $("#pagelist").append(str);
+            }
+
+            str = "<li><a onclick='getnextpage()'>Next</a></li>";
+            $("#pagelist").append(str);
+
+        }
+        // alert(currentPage);
+        else if(nowpage==1){
+            // alert(currentPage+"Yes");
+            $("#pagelist").empty();
+            let str = "";
+            str = "<li><a onclick='getpage(1)'>First</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getprevpage()'>Prev</a></li>";
+            $("#pagelist").append(str);
+
+            endpagenum = nowpage + 2;
+
+            for (let i = nowpage; i <= endpagenum; i++) {
+                str = "<li><a onclick='getpage(" + i + ")'>" + i + "</a></li>";
+                $("#pagelist").append(str);
+            }
+
+            str = "<li><a onclick='rebuiltPage(" + (nowpage + 1) + ")'>" + "…" + "</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getpage(" + SumPage + ")'>" + SumPage + "</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getnextpage()'>Next</a></li>";
+            $("#pagelist").append(str);
+
+        }
+        else if (nowpage<SumPage-3) {
+            $("#pagelist").empty();
+            let str = "";
+            str = "<li><a onclick='getpage(1)'>First</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getprevpage()'>Prev</a></li>";
+            $("#pagelist").append(str);
+
+            endpagenum = nowpage + 1;
+
+            for (var i = nowpage-1; i <= endpagenum; i++) {
+                str = "<li><a onclick='getpage(" + i + ")'>" + i + "</a></li>";
+                $("#pagelist").append(str);
+            }
+
+            str = "<li><a onclick='rebuiltPage(" + (nowpage + 1) + ")'>" + "…" + "</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getpage(" + SumPage + ")'>" + SumPage + "</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getnextpage()'>Next</a></li>";
+            $("#pagelist").append(str);
+
+        }
+        else if(nowpage==SumPage-3){
+            $("#pagelist").empty();
+            let str = "";
+            str = "<li><a onclick='getpage(1)'>First</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getprevpage()'>Prev</a></li>";
+            $("#pagelist").append(str);
+
+            endpagenum = SumPage;
+
+            str = "<li><a onclick='rebuiltPage(" + (nowpage - 1) + ")'>" + "…" + "</a></li>";
+            $("#pagelist").append(str);
+
+            for (var i = nowpage; i <= endpagenum; i++) {
+                str = "<li><a onclick='getpage(" + i + ")'>" + i + "</a></li>";
+                $("#pagelist").append(str);
+            }
+
+            str = "<li><a onclick='getnextpage()'>Next</a></li>";
+            $("#pagelist").append(str);
+        }
+        else if(nowpage>=SumPage-2){
+            $("#pagelist").empty();
+
+            let str = "";
+            str = "<li><a onclick='getpage(1)'>First</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getprevpage()'>Prev</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='getpage(" + 1 + ")'>" + 1 + "</a></li>";
+            $("#pagelist").append(str);
+
+            str = "<li><a onclick='rebuiltPage(" + (nowpage-1) + ")'>" + "…" + "</a></li>";
+            $("#pagelist").append(str);
+
+            beginPage = SumPage-2;
+
+            for (let i = beginPage; i <= SumPage; i++) {
+                str = "<li><a onclick='getpage(" + i + ")'>" + i + "</a></li>";
+                $("#pagelist").append(str);
+            }
+
+            str = "<li><a onclick='getnextpage()'>Next</a></li>";
+            $("#pagelist").append(str);
+        }
+        str = "<li><a>共"+SumPage+"页，第"+currentPage+"页</a></li>";
+        $("#pagelist").append(str);
+    }
+
+    function getpage(pagenum){
+        getpage1(pagenum,mold);
+    }
+
+    function getpage1(pagenum,mold){
+        if(pagenum>SumPage || pagenum<=0){
+            alert("已经到头啦！");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '../../com/index/index.php',
+            data:"action="+mold+"ShowPage&pagenum="+pagenum,
+            success: function (data) {
+                // alert("Yes");
+                console.log(data);
+                var a = data.split('&_cxllovezjh');
+                console.log(a);
+                var trStr="";
+
+                $("#zplist").empty();
+                $("#dxzphlist").empty();
+                $("#tzlist").empty();
+
+                for (var i = 0; i < a.length-1; i++) {
+                    //TODO:判断置顶与否，颜色不同
+                    if (JSON.parse(a[i]).top==1) {
+                        trStr += '<li>';
+                        trStr += "<a style='color:red;margin-left:-5px;width:330px;' href='lookpage.html?mold="+mold+"&id="+JSON.parse(a[i]).id+"'>" + "【置顶】" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span style='color:red;'>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                    else{
+                        trStr += '<li>';
+                        trStr += "<a href='lookpage.html?mold="+mold+"&id="+JSON.parse(a[i]).id+"'>" + JSON.parse(a[i]).title;
+                        trStr += "</a>";
+                        trStr += " <span>" + JSON.parse(a[i]).postdate + "</span>";
+                        trStr += '</li>';
+                    }
+                }
+                $("#"+mold+"list").append(trStr);
+                // $("#hint").html("第"+currentPage+"页，共"+SumPage+"页");
+
+                currentPage=pagenum;
+                rebuiltPage(currentPage);
+            },
+            error:function(){
+                console.log("ERROR")
+            }
+        });
+    }
+
+    function getprevpage() {
+        getpage(currentPage-1);
+    }
+
+    function getnextpage() {
+        getpage(currentPage+1);
+    }
+
+    $("#zp").on("click" , function () {
+        mold="zp";
+        init();
+    });
+
+    $("#dxzph").on("click" , function () {
+        mold="dxzph";
+        init();
+    });
+
+    $("#tz").on("click" , function () {
+        mold="tz";
+        init();
+    });
+
+</script>
+
+</body>
+</html>
